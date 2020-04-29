@@ -1,0 +1,828 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+  \usetheme{CambridgeUS}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{default} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+  \setbeamertemplate{bibliography item}{\insertbiblabel}
+  
+} 
+
+\setbeamertemplate{footline}
+{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.4\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortauthor
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.6\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle\hspace*{3em}
+    \insertframenumber{} / \inserttotalframenumber\hspace*{1ex}
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{transparent}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{corollary}{Corollary}
+% \newtheorem{lemma}{Lemma}
+% \newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+
+
+\definecolor{mygray}{gray}{0.8}
+\setbeamercolor{palette tertiary}{fg=red, bg=mygray}
+
+
+
+% Beatiful table
+\usepackage{booktabs} 
+\usepackage{colortbl} 
+\usepackage{xcolor} 
+
+\usepackage{caption}
+% \usepackage{subfig}
+\usepackage{subcaption}
+  
+
+\title[Paper Presentation]{RDP-CGAN: Synthetic Data Generation with Convolutional GANs and Renyi Differential Privacy}
+
+\author{Amirsina Torfi}
+
+\institute{\bf Virginia Tech, Department of Computer Science\\Paper Presentation\\
+\vspace{0.5cm}
+Authors:\\
+Amirsina Torfi \hspace{0.5cm} Edward A. Fox}
+
+
+%\textsc {Industrial Training Presentation }
+
+\date{30 April 2020}
+
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% \section*{Acknowledgement}
+
+% \begin{frame}{}
+
+% \begin{itemize}
+%     \item Especial thanks to my adviser Dr. Fox
+%     \item Warm gratitude towards my committee members
+%     \item I would like to thank all my labmates
+%     \item My gratitude toward NewWave Corporation Graduate Fellowship towards this research
+%     \item My wife!
+% \end{itemize}
+
+% \end{frame}
+
+
+\section{Table of Content}
+
+\begin{frame}{}
+
+\begin{itemize}
+  \item \textcolor{red}{\textbf{Introduction}}
+  \item Specific Aims
+  \item Background
+  \item Framework
+  \item Experiments
+  \item References
+  
+\end{itemize}
+
+
+\end{frame}
+
+
+\section{Introduction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Motivation}
+
+\begin{itemize}
+  \item Electronic Health Records (EHRs) \& Big Data in healthcare $\rightarrow$ Calls for employing \textcolor{red}{data-driven methods} with \textit{Artificial Intelligence} (AI)
+  \item De-identification of EHR data employed for mitigation of privacy risks $\rightarrow$ \textcolor{red}{NOT SECURE!}~\cite{janmey2018re,scaiano2018re,baker2018method}
+  \item Need for \textcolor{red}{synthetic healthcare records} for Machine Learning
+  
+   \begin{figure}
+\includegraphics[scale=1.0]{_img/artificial-intelligence-3382507_640.jpg}
+% \caption{\label{fig:your-figure}OLTAS}
+\end{figure}
+\vskip 1cm
+  
+  
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Motivation}
+
+\begin{itemize}
+  \item Synthetic records helping stakeholders to \textcolor{red}{share and work} on data without privacy hurdles
+  \item \textcolor{mygray}{Despite advances in \textit{Synthetic Data Generation~(SDG)} $\rightarrow$ Research efforts mostly restricted to limited use cases}
+  \item \textcolor{mygray}{Lack of clarity regarding the synthetic data being realistic; and factors contributing to realism}
+  \item \textcolor{mygray}{Majority of methods for supervised settings}
+  \item \textcolor{mygray}{Lack of clarity in measuring privacy, and privacy guarantees}
+  \item \textcolor{mygray}{EHRs are discrete in nature $\rightarrow$ But most research is on continuous data}
+  
+  
+  
+\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Motivation}
+\addtocounter{framenumber}{-1}
+
+\begin{itemize}
+  \item Synthetic records helping stakeholders to \textcolor{red}{share and work} on data without privacy hurdles
+  \item Despite advances in \textit{Synthetic Data Generation~(SDG)} $\rightarrow$ Research efforts mostly restricted to \textcolor{red}{limited use cases}
+  \item \textcolor{mygray}{Lack of clarity regarding the synthetic data being realistic; and factors contributing to realism}
+  \item\textcolor{mygray}{ Majority of methods for supervised settings}
+  \item \textcolor{mygray}{Lack of clarity in measuring privacy, and privacy guarantees}
+  \item \textcolor{mygray}{EHRs are discrete in nature $\rightarrow$ But most research is on continuous data}
+  
+  
+  
+\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Motivation}
+\addtocounter{framenumber}{-1}
+
+\begin{itemize}
+  \item Synthetic records helping stakeholders to \textcolor{red}{share and work} on data without privacy hurdles
+  \item Despite advances in \textit{Synthetic Data Generation~(SDG)} $\rightarrow$ Research efforts mostly restricted to \textcolor{red}{limited use cases}
+  \item \textcolor{red}{Lack of clarity} regarding the synthetic data being realistic; and factors contributing to realism
+  \item \textcolor{mygray}{Majority of methods for supervised settings}
+  \item \textcolor{mygray}{Lack of clarity in measuring privacy, and privacy guarantees}
+  \item \textcolor{mygray}{EHRs are discrete in nature $\rightarrow$ But most research is on continuous data}
+  
+  
+  
+\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Motivation}
+\addtocounter{framenumber}{-1}
+
+\begin{itemize}
+  \item Synthetic records helping stakeholders to \textcolor{red}{share and work} on data without privacy hurdles
+  \item Despite advances in \textit{Synthetic Data Generation~(SDG)} $\rightarrow$ Research efforts mostly restricted to \textcolor{red}{limited use cases}
+  \item \textcolor{red}{Lack of clarity} regarding the synthetic data being realistic; and factors contributing to realism
+  \item Majority of methods for \textcolor{red}{supervised settings}
+  \item \textcolor{mygray}{Lack of clarity in measuring privacy, and privacy guarantees}
+  \item \textcolor{mygray}{EHRs are discrete in nature $\rightarrow$ But most research is on continuous data}
+  
+  
+  
+\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Motivation}
+\addtocounter{framenumber}{-1}
+
+\begin{itemize}
+  \item Synthetic records helping stakeholders to \textcolor{red}{share and work} on data without privacy hurdles
+  \item Despite advances in \textit{Synthetic Data Generation~(SDG)} $\rightarrow$ Research efforts mostly restricted to \textcolor{red}{limited use cases}
+  \item \textcolor{red}{Lack of clarity} regarding the synthetic data being realistic; and factors contributing to realism
+  \item Majority of methods for \textcolor{red}{supervised settings}
+  \item Lack of clarity in \textcolor{red}{measuring privacy}, and privacy guarantees
+  \item \textcolor{mygray}{EHRs are discrete in nature $\rightarrow$ But most research is on continuous data}
+  
+  
+  
+\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Motivation}
+\addtocounter{framenumber}{-1}
+
+\begin{itemize}
+  \item Synthetic records helping stakeholders to \textcolor{red}{share and work} on data without privacy hurdles
+  \item Despite advances in \textit{Synthetic Data Generation~(SDG)} $\rightarrow$ Research efforts mostly restricted to \textcolor{red}{limited use cases}
+  \item \textcolor{red}{Lack of clarity} regarding the synthetic data being realistic; and factors contributing to realism
+  \item Majority of methods for \textcolor{red}{supervised settings}
+  \item Lack of clarity in \textcolor{red}{measuring privacy}, and privacy guarantees
+  \item EHRs are \textcolor{red}{discrete} in nature $\rightarrow$ But most research is on \textcolor{red}{continuous} data
+  
+  
+  
+\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{frame}{Goals}
+
+% \begin{itemize}
+%   \item Data-driven model generating \textcolor{blue}{realistic} synthetic healthcare records using GANs
+%   \item \textcolor{blue}{Realistic measures} for synthesized data and its privacy
+%   \item \textcolor{blue}{Guarantees} the model does not jeopardize privacy 
+%   \item Models, implementations, and protections for \textcolor{blue}{other likely types} of attacks
+  
+  
+% \end{itemize}
+
+% \end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Specific Aims}
+
+\begin{frame}{}
+
+\begin{itemize}
+  \item Introduction
+  \item \textcolor{red}{\textbf{Specific Aims}}
+  \item Background
+  \item Framework
+  \item Experiments
+  \item References
+  
+\end{itemize}
+
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Aim 1: Develop the Generative Model}
+
+\begin{itemize}
+  \item Capturing \textcolor{red}{spatial-temporal information}
+  \item Handling \textcolor{red}{discrete} and \textcolor{red}{continuous} data
+  \item Evaluation of synthetic data quality: \textbf{supervised} (using classification tasks) and \textbf{unsupervised} (using statistical analysis)
+  
+
+\end{itemize}
+
+\begin{figure}
+\includegraphics[scale=0.4]{_img/generative.png}
+\caption{\label{fig:gen-model}{Generative/Discriminative Models~\href{https://medium.com/@jordi299/about-generative-and-discriminative-models-d8958b67ad32}{[Link]}}}
+\end{figure}
+  
+\end{frame}
+
+
+\begin{frame}{Aim 1: Develop the Generative Model}
+
+\begin{itemize}
+  \item \textbf{\textcolor{red}{Hypothesis 1:}} Generative Adversarial Networks~(GANs) perform better than other generative models.
+  \item \textbf{\textcolor{red}{Hypothesis 2:}} Convolutional Neural Networks~(CNNs) outperform Multilayer Perceptrons $\rightarrow$ \textit{Capturing and integrating more temporal and spatial information from healthcare records}
+
+\end{itemize}
+
+
+\end{frame}
+
+% {
+
+% \usebackgroundtemplate{{\transparent{0.4}\includegraphics[width=\paperwidth]{_img/privacy.png}}
+% }
+
+% \begin{frame}{Aim 2: Measuring Realistic Characteristics}
+
+% \begin{itemize}
+%   \item Use \textcolor{blue}{machine learning} and \textcolor{red}{statistics}
+%   \item Can we \textcolor{red}{replace} real data with synthetic data?
+ 
+
+
+
+  
+% \end{itemize}
+
+% \end{frame}
+
+
+\begin{frame}{Aim 2: Enforcing Differential Privacy}
+
+\begin{itemize}
+  \item \textcolor{blue}{Differential Privacy} applied for privacy amplification
+  \item We employed a new notion of DP called \textcolor{red}{Renyi Differential Privacy}
+
+\end{itemize}
+
+  \begin{figure}
+\includegraphics[scale=0.2]{_img/privacy.png}
+\caption{\label{fig:privacy}{}{}}
+\end{figure}
+\vskip 1cm
+ 
+
+\end{frame}
+
+
+\begin{frame}{Aim 3: Measuring Privacy}
+
+\begin{itemize}
+  \item Measure information leakage using a privacy accountant
+  
+  \item \textbf{\textcolor{red}{Hypothesis:}} By enforcing privacy, the performance will be degraded $\rightarrow$ Investigating the trade-off
+
+\end{itemize}
+
+\begin{center}
+  \begin{figure}
+\includegraphics[scale=0.15]{_img/privacyhyp.png}
+\end{figure}\label{fig:privacyhyp}
+\vskip 1cm
+\end{center}
+
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Background}
+
+\begin{frame}{}
+\begin{itemize}
+  \item Introduction
+  \item Specific Aims
+  \item \textcolor{red}{\textbf{Background}}
+  \item Framework
+  \item Experiments
+  \item References
+  
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Generative Adversarial Networks}
+
+\begin{center}
+  \begin{figure}
+\includegraphics[scale=0.35]{_img/gans.png}
+\end{figure}\label{fig:gans}
+\vskip 1cm
+\end{center}
+
+\end{frame}
+
+% \begin{frame}{Convolutional GANs}
+
+%   \begin{figure}
+% \includegraphics[scale=0.5]{_img/generativemodel.png}
+% \caption{\label{fig:gen-model}{Example of a CGAN: OpenAI~\href{https://openai.com/blog/generative-models/}{[Link]}}}
+% \end{figure}
+% \vskip 1cm
+
+% \end{frame}
+
+\begin{frame}{Power of GANs}
+
+  \begin{figure}
+\includegraphics[scale=0.35]{_img/fakeimages.png}
+\caption{\label{fig:ganexamples}{Example of Fake images~\cite{karras2019style}}}
+\end{figure}
+\vskip 1cm
+
+\end{frame}
+
+\begin{frame}{Privacy}
+
+  \begin{figure}
+\includegraphics[scale=0.18]{_img/membershipattack.png}
+\end{figure}\label{fig:privacymembership}
+
+\end{frame}
+
+
+\begin{frame}{Differential Privacy}
+
+\begin{itemize}
+    \item Two \textcolor{blue}{neighbor} datasets $X$, $\acute{X}$ only differ in one element
+    \item Algorithm F is \textcolor{blue}{$\epsilon$-differentially private} if for any two neighbor datasets ($X$, $\acute{X}$) and for all possible outputs we have: 
+    
+    \begin{equation*}
+        \frac{Pr[F(X)=w]}{Pr[F(\acute{X})=w]}\leqslant e^{\epsilon}
+    \end{equation*}
+    
+    \item Example: If person $P_i$ \textcolor{red}{changed their input} from $g$
+    to $\acute{g}$, the \textbf{relative probabilities
+    of any output} \textcolor{blue}{do not change by much}.
+    \item \textbf{Theorem (post-processing):} Assume $\mathcal{D}:\mathbb{N}^{|\mathcal{X}|} \rightarrow \mathbb{R}$ is a randomized algorithm which is $\epsilon$-differentially private and $\mathcal{G}:\mathbb{R} \rightarrow \mathbb{R'}$ is an arbitrary randomized mapping.~Then $\mathcal{G} \circ \mathcal{D}:\mathbb{N}^{|\mathcal{X}|} \rightarrow \mathbb{R'}$ is $\epsilon$-differentially private as well~\cite{dwork2014algorithmic}.
+    
+\end{itemize}
+
+
+\end{frame} 
+
+
+\begin{frame}{Renyi Differential Privacy}
+
+\begin{definition}[Renyi divergence of order $\alpha$]\label{def:rd}
+
+The Rényi divergence of order $\alpha$ of a distribution $P$ from the distribution $Q$ is defined as below:
+
+$$D_\alpha(P||Q)=\frac{1}{\alpha - 1} log \left (E_{Q(x)}\left ( \frac{P(x)}{Q(x)} \right )^{\alpha}\right )$$ 
+
+\end{definition}
+
+\begin{definition}[Renyi Differential Privacy~(RDP)]\label{def:rdp}
+
+The randomized algorithm $\mathcal{A}: \mathcal{X} \rightarrow \mathcal{U}$ is $(\alpha,\epsilon)$-RDP if for all neighbor databases $X$ and ${X}'$ we have:
+
+$$D_\alpha(\mathcal{A}(X)||\mathcal{A}({X}')) \leq \epsilon$$
+
+\end{definition}
+
+
+\end{frame} 
+
+
+\begin{frame}{RDP Properties}
+
+ \begin{proposition}[Composition of RDP]\label{def:rdp-p1}
+ 
+ If $\mathcal{A}: \mathcal{X} \rightarrow \mathcal{U}_1$ is $(\alpha,\epsilon_{1})$-RDP and $\mathcal{B}: \mathcal{U}_1 \times \mathcal{X} \rightarrow \mathcal{U}_2$ is $(\alpha,\epsilon_{2})$-RDP, then the mechanism $(\mathcal{M}_1,\mathcal{M}_2) $, where $\mathcal{M}_1 \sim \mathcal{A}(\mathcal{X})$ and $\mathcal{M}_2 \sim \mathcal{B}(\mathcal{M}_1,\mathcal{X})$ satisfies the $(\alpha,\epsilon_{1}+\epsilon_{2})$-RDP conditions.$\blacktriangle$
+
+\end{proposition}
+
+ \begin{proposition}\label{def:rdp-p2}
+ If the mechanism $\mathcal{A}: \mathcal{X} \rightarrow \mathcal{U}$ is $(\alpha,\epsilon)$-RDP then it also obeys $(\epsilon + \frac{log(1/\delta)}{(\alpha-1)}),\delta)$-DP for any $0 < \delta < 1$.$\blacktriangle$
+
+\end{proposition}
+
+
+\end{frame} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Framework}
+
+\begin{frame}{}
+\begin{itemize}
+  \item Introduction
+  \item Specific Aims
+  \item Background
+  \item \textcolor{red}{\textbf{Framework}}
+  \item Experiments
+  \item References
+  
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Privacy-Preserving}
+
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=0.95\textwidth]{rdp-cgan.png}
+\includegraphics[scale=0.35]{_img/rdp-cgan.png}
+\caption{The RDP-CGAN framework.}
+\label{fig:rdp-model}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}{Deep Learning With Differential Privacy}
+
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=0.95\textwidth]{rdp-cgan.png}
+\includegraphics[scale=0.18]{_img/algo.png}
+\caption{The DP algorithm.}
+\label{fig:algorithmdp}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}{Convolutional Autoencoder}
+
+\begin{itemize}
+    \item We use a \textit{One Dimensional Convolutional Autoencoder~(1D-CAE)}, amis to:
+    \begin{enumerate}
+        \item capture the correlation between neighboring features
+        \item represents a new compact feature space
+        \item transform the possible discrete records to a new continuous space
+        \item simultaneously model discrete and continuous which is a know issue in the SDG literature
+    \end{enumerate}
+    
+    \item GAN architecture is designed to handle both discrete and continuous values
+\end{itemize}
+
+\begin{equation}\label{eq:bce}
+BCE:-\frac{1}{m}\sum_{i}^{m}\left ( x_i log(\hat{x}_i) + (1- x_i) log(1 - \hat{x}_i) \right )
+\end{equation}
+
+\begin{equation}\label{eq:mse}
+MSE:\frac{1}{m}\sum_{i=1}^{m} \left |x_i - \hat{x}_i \right |^2
+\end{equation}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}{Convolutional GAN (Discriminator \& Generator)}
+
+\begin{itemize}
+    \item One-Dimentional Convolutional Generative Adversarial Networks (1D-CGANs)
+    
+    \item Improving power of generative model $\rightarrow$ Using \textcolor{blue}{Wasserstein GAN}~\cite{arjovsky2017wasserstein}
+    \item \textcolor{blue}{\textbf{Wasserstein distance}}: Represents minimum price in transforming generated data distribution $\boldsymbol{P_g}$ to real data distribution $\boldsymbol{P_r}$
+    \begin{equation*} \label{eq:KR}
+    W(\mathbb{P}_r, \mathbb{P}_\theta) = \sup_{\|f\|_L \leq 1} E_{x \sim \mathbb{P}_r}
+    [f(x)] - E_{x \sim \mathbb{P}_g}[f(x)]
+    \end{equation*}
+    
+    Supremum is over all 1-Lipschitz functions
+    \item \textcolor{red}{Advantages:} \textbf{(1)} No mode collapse reported; \textbf{(2)} Understandable workflow
+    \item \textcolor{red}{Hypothesis}: More realistic results
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{How to Calculate Privacy Loss?}
+
+\begin{itemize}
+    \item Tracking RDP privacy accountant~\cite{abadi2016deep} is \textcolor{blue}{computationally more precise} than the regular DP
+    \item The noise additive procedure is also called \textit{Sampled Gaussian Mechanism~(SGM)}
+    \item How do we calculate the $(\alpha,\epsilon)$-RDP for the \textit{\textcolor{red}{combination} of autoencoder and GAN training?}
+    \item The \textbf{Composition of RDP} proposition directly results in having the \textcolor{red}{whole system} with $(\alpha,\epsilon_{ae}+\epsilon_{gan})$
+\end{itemize}
+
+
+
+\end{frame}
+
+\begin{frame}{SGM privacy loss}
+
+\begin{theorem}[SGM privacy loss]
+
+Assume $D$ and $D'$ are two neighbor databases and $\mathcal{G}$ is a SGM applied to a function $f$ with $\ell_{2}$-sensitivity of one.~If we set the following:
+
+$$\mathcal{G}(D) \sim \varphi_{1} \overset{\Delta}{=} \mathcal{N}(0,\sigma^2)$$
+$$\mathcal{G}(D') \sim \varphi_{2} \overset{\Delta}{=} (1-q)\mathcal{N}(0,\sigma^2) + q \mathcal{N}(0,\sigma^2)$$
+
+
+where $\varphi_{1}$ and $\varphi_{2}$ are PDFs, then, the mechanism $\mathcal{G}$ satisfies $(\alpha,\epsilon)$-RDP for:
+
+$$\epsilon \leq \frac{1}{\alpha - 1} log(max\left \{ A_\alpha,B_\alpha \right \})$$
+
+where $ A_{\alpha} \overset{\Delta}{=} \mathbb{E}_{x \sim \varphi_{1}}\left [ \left ( \varphi_{2} / \varphi_{1} \right )^\alpha \right ]$ and $ B_{\alpha} \overset{\Delta}{=} \mathbb{E}_{x \sim \varphi_{2}}\left [ \left ( \varphi_{1} / \varphi_{2} \right )^\alpha \right ]$. $\blacktriangle$
+
+\end{theorem}
+    
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Experiments}
+
+\begin{frame}[noframenumbering]{}
+% \addtocounter{framenumber}{-1}
+
+\begin{itemize}
+  \item Introduction
+  \item Specific Aims
+  \item Background
+  \item Preliminary Work
+  \item \textcolor{red}{\textbf{Experiments}}
+  \item References
+  
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{General Considerations}
+
+\begin{itemize}
+    \item We split the dataset into a train $\mathcal{D}_{tr}$ and a test set $\mathcal{D}_{te}$
+    \item All the reported $\epsilon$ are associated with the $(\epsilon,\delta)$-DP definition with $\delta=10^{-5}$, unless otherwise stated
+    \item We report models' evaluations under the differentially private setting (changing $\epsilon$)
+\end{itemize}
+    
+\end{frame}
+
+\begin{frame}{Unsupervised Setting: Setup}
+
+\begin{itemize}
+    \item We use binary discrete datasets with $\mathcal{D}_{tr} \in \{0,1\}^{R \times |\mathcal{T}|}$, $\mathcal{D}_{te} \in \{0,1\}^{T \times |\mathcal{T}|}$, and $\mathcal{D}_{syn} \in \{0,1\}^{S \times |\mathcal{T}|}$
+    \item $|\mathcal{T}|$ represents the feature size
+    \item The goal is to capture the information of a data and synthesize a dataset similar to the real private data
+    \item \textbf{Dataset.} We use \textit{MIMIC-III} dataset~\cite{johnson2016mimic} that consists the medical records of around 46K patients.
+\end{itemize}
+
+  \begin{figure}
+\includegraphics[scale=0.2]{_img/EHRdata.png}
+\end{figure}\label{fig:ehr}
+
+\end{frame}
+
+
+\begin{frame}{Unsupervised Setting: Evaluation}
+
+\begin{itemize}
+    \item \textcolor{blue}{Dimension-Wise Probability}
+    \begin{itemize}
+        \item Basic \textbf{sanity check}; learning the distribution of the real data
+        \item \textbf{Bernoulli success probability} of each dimension 
+        \item Each dimension is a unique medical code
+    \end{itemize}
+    
+    
+    \item \textcolor{blue}{Dimension-Wise Prediction}
+    \begin{itemize}
+        \item Measures how robustly the model catches the \textcolor{red}{inter-dimensional connections} of the real data samples
+        \item One random fixed dimension~($k$) from each $\mathcal{S}_{syn}$ and $\mathcal{S}_{tr}$: $\mathcal{S}_{syn,k} \in \{0,1\}^{N \times 1}$ and $\mathcal{S}_{tr,k} \in \{0,1\}^{N \times 1}$
+        \item The rest of the dimensions~($\mathcal{S}_{syn, \backslash k} \in \{0,1\}^{N \times T-1}$ and $\mathcal{S}_{tr, \backslash k} \in \{0,1\}^{N \times T-1}$) are used to train two classifiers
+        \item Classifiers predicts the value of the testing dimension of test set $\mathcal{S}_{te,k} \in \{0,1\}^{M \times 1}$
+        \item \textbf{N},~\textbf{M},~\textbf{T}: Train set, test set, and feature size
+    \end{itemize}
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Dimesion-Wide Probability}
+
+\begin{figure}[t!]
+    \centering
+    \begin{subfigure}[t]{0.4\textwidth}
+        \centering
+        \includegraphics[height=1.6in]{_img/einf.png}
+        % \caption{Lorem ipsum}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.4\textwidth}
+        \centering
+        \includegraphics[height=1.6in]{_img/e53.png}
+        % \caption{Lorem ipsum}
+    \end{subfigure}
+    \caption{Dimension-wise probability of real data~(horizontal axis) vs synthesized data~(vertical axis). As can be observed, enforcing differential privacy~($\epsilon=53.2$ in right figure) will degrade the results as opposed to not adding any level of privacy~($\epsilon=\infty$ in right figure).}
+\end{figure}
+
+    
+\end{frame}
+
+
+\begin{frame}{Dimesion-Wide Prediction}
+
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=0.95\textwidth]{rdp-cgan.png}
+\includegraphics[scale=0.35]{_img/dwpred.png}
+\caption{The comparison of dimension-wise prediction our proposed model~(RDP-CGAN) with two other models of DPGAN~\cite{xie2018differentially} and PATE-GAN~\cite{jordon2018pate}.~As can be observe, while the privacy budget becomes tighter, our model performing better.~One main reason is that RDP provides a better privacy budget}
+\label{fig:dwpred}
+\end{figure}
+
+    
+\end{frame}
+
+\begin{frame}{Synthetic Data Fidelity}
+
+\begin{center}
+  \begin{figure}
+\includegraphics[scale=0.15]{_img/datafidelity.png}
+\end{figure}\label{fig:datafidelity}
+\end{center}
+    
+\end{frame}
+
+\begin{frame}{Supervised Setting}
+
+\begin{itemize}
+    \item \textbf{Binary Classification Setting}
+    \item Train different classifiers and report average: \textit{Logistic Regression,~Random Forests,~Linear SVM,~and Decision Tree}
+    \item \textbf{\textcolor{blue}{Metric:}} Averaged \textbf{AUROC} (averaged area under ROC for all models) and \textbf{AUPRC} (averaged area under PR curve for all models)
+\end{itemize}
+
+\begin{table}
+  \caption{The comparison of different models under $(1,10^{-5})$-DP setting.~For $\epsilon=\infty$, we used our RDP-CGAN model without enforcing privacy.~The acronyms RDP, PATE, and DP, are used for RDP-CGAN, PATE-GAN, and DPGAN, respectively.}
+  \label{tab:modelsupervised}
+  \centering
+  \resizebox{.99\textwidth}{!}{
+\begin{tabular}{ccccccccc}
+\toprule 
+    Metric & \multicolumn{4}{c}{AUROC} & \multicolumn{4}{c}{AUPRC}\\
+    \cmidrule(r){2-9}
+    
+    & baseline / $\epsilon=\infty$ & DP & PATE & RDP
+    & baseline / $\epsilon=\infty$ & DP & PATE & RDP  \\
+    \midrule
+    Kaggle cervical cancer & 0.94 / 0.92   & 0.86    &   \textbf{0.91}  & 0.93 & 0.69 / 0.63 & 0.44 & 0.54 & \textbf{0.59} \\
+    UCI Epileptic Seizure & 0.97 / 0.93   & 0.64    &   0.76  & \textbf{0.84} & 0.89 / 0.85 & 0.51 & 0.65 & \textbf{0.73}\\
+    UNOS-Heart wait-list & 0.69 / 0.66   & 0.53    &   0.59  & \textbf{0.63} & 0.74 / 0.69 & 0.62 & 0.56 & \textbf{0.65}\\
+    MAGGIC & 0.72 / 0.69  & 0.64    &   0.63  & \textbf{0.66} & 0.38 / 0.34 & 0.31 & 0.29 & \textbf{0.32}\\
+    \bottomrule
+\end{tabular}
+}
+\end{table}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{References}
+
+\begin{frame}[noframenumbering]{}
+% \addtocounter{framenumber}{-1}
+
+\begin{itemize}
+  \item Introduction
+  \item Specific Aims
+  \item Background
+  \item Framework
+  \item Experiments
+  \item \textcolor{red}{\textbf{References}}
+  
+\end{itemize}
+
+\end{frame}
+
+
+% \begin{frame}{References}
+
+\bibliographystyle{ieeetr}
+\bibliography{ref}
+
+\begin{frame}{}
+
+\begin{center}
+  \begin{figure}
+\includegraphics[scale=0.25]{_img/hand-writing-thank-you-note-AMSC57F.jpg}
+\end{figure}\label{fig:thankyou}
+\vskip 1cm
+\end{center}
+
+
+\end{frame}
+
+\end{document}
